@@ -1,0 +1,44 @@
+class Site implements Runnable {
+	private int count = 30;
+	private int num = 0;
+	private boolean flag = false;
+
+	public void run() {
+		while (!flag) {
+			sale();
+		}
+	}
+
+	public void sale() {
+		synchronized (this) {
+			if (count <= 0) {
+				flag = true;
+				return;
+			}
+			num++;
+			count--;
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			System.out.println(Thread.currentThread().getName() + "抢到第" + num + "张票，剩余" + count + "张票！");
+			while (Thread.currentThread().getName().equals("黄牛")) {
+				Thread.currentThread().stop();
+			}
+		}
+	}
+
+}
+
+public class SiteTest {
+	public static void main(String[] args) {
+		Site s = new Site();
+		Thread t1 = new Thread(s, "桃泡泡");
+		Thread t2 = new Thread(s, "黄牛");
+		Thread t3 = new Thread(s, "代理");
+		t1.start();
+		t2.start();
+		t3.start();
+	}
+}
